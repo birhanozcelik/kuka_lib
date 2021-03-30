@@ -6,9 +6,8 @@ from geometry_msgs.msg import PoseStamped
 class ArmControl:
     def __init__(self):
         rospy.init_node("set_poser",anonymous=True)
-        self.pub = rospy.Publisher('/iiwa/command/CartesianPose', PoseStamped, queue_size=10)
-        self.pos = PoseStamped()               
-        print("init fonk ici")
+        self.pub = rospy.Publisher('/iiwa/command/CartesianPose', PoseStamped, queue_size=10)        
+        self.pos = PoseStamped()                       
     def set_pose(self,posX,posY,posZ,oriX,oriY,oriZ,oriW):        
         self.pos.header.seq = 1
         self.pos.header.stamp = rospy.Time.now()
@@ -30,5 +29,12 @@ class ArmControl:
             return True
         else:
             return False
+
+    def get_pose(self):
+        self.sub = rospy.Subscriber('/iiwa/state/CartesianPose', PoseStamped, self.subsFonk)
+        rospy.spin()        
+
+    def subsFonk(self,data):
+        print(data)        
         
     
