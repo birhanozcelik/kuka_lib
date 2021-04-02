@@ -2,11 +2,13 @@
 
 import rospy
 from geometry_msgs.msg import PoseStamped
-
+from std_msgs.msg import Float64
 class ArmControl:
     def __init__(self):
         rospy.init_node("set_poser",anonymous=True)
-        self.pub = rospy.Publisher('/iiwa/command/CartesianPose', PoseStamped, queue_size=10)        
+        self.pub = rospy.Publisher('/iiwa/command/CartesianPose', PoseStamped, queue_size=10)       
+        self.grabber_left_pub = rospy.Publisher('/iiwa/grabber_left_joint/set_speed', Float64, queue_size=10)
+        self.grabber_right_pub = rospy.Publisher('/iiwa/grabber_right_joint/set_speed', Float64, queue_size=10)
         self.pos = PoseStamped()                       
     def set_pose(self,posX,posY,posZ,oriX,oriY,oriZ,oriW):        
         self.pos.header.seq = 1
@@ -35,6 +37,17 @@ class ArmControl:
         rospy.spin()        
 
     def subsFonk(self,data):
-        print(data)        
+        print(data)     
+            
+    def gripper(self, state):
+        if state == True:
+            self.left_gripper_msg.data = 0.05
+            self.right_gripper_msg.data = -0.05
+        else:
+            self.left_gripper_msg.data = -0.05
+            self.right_gripper_msg.data = 0.05
+
+        self.grabber_left_pub.publish(self.left_gripper_msg)
+        self.grabber_right_pub.publish(self.right_gripper_msg)
         
     
