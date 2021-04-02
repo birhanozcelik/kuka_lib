@@ -9,7 +9,10 @@ class ArmControl:
         self.pub = rospy.Publisher('/iiwa/command/CartesianPose', PoseStamped, queue_size=10)       
         self.grabber_left_pub = rospy.Publisher('/iiwa/grabber_left_joint/set_speed', Float64, queue_size=10)
         self.grabber_right_pub = rospy.Publisher('/iiwa/grabber_right_joint/set_speed', Float64, queue_size=10)
-        self.pos = PoseStamped()                       
+        self.pos = PoseStamped()    
+        self.left_gripper_msg = Float64()
+        self.right_gripper_msg = Float64()
+        
     def set_pose(self,posX,posY,posZ,oriX,oriY,oriZ,oriW):        
         self.pos.header.seq = 1
         self.pos.header.stamp = rospy.Time.now()
@@ -23,8 +26,9 @@ class ArmControl:
         self.pos.pose.orientation.y = oriY
         self.pos.pose.orientation.z = oriZ
         self.pos.pose.orientation.w = oriW      
-        self.pub.publish(self.pos)        
-            
+        self.pub.publish(self.pos)     
+        rospy.sleep(2)
+        
 
     def is_ok(self):
         if not rospy.is_shutdown():
