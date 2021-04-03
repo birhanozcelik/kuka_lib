@@ -3,15 +3,20 @@
 import rospy
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Float64
+from iiwa_msgs.msg import JointPosition
+from iiwa_msgs.msg import JointQuantity
 class ArmControl:
     def __init__(self):
         rospy.init_node("set_poser",anonymous=True)
         self.pub = rospy.Publisher('/iiwa/command/CartesianPose', PoseStamped, queue_size=10)       
         self.grabber_left_pub = rospy.Publisher('/iiwa/grabber_left_joint/set_speed', Float64, queue_size=10)
         self.grabber_right_pub = rospy.Publisher('/iiwa/grabber_right_joint/set_speed', Float64, queue_size=10)
+        self.joint_pub = rospy.Publisher('iiwa/command/JointPosition', JointPosition, queue_size=10)
         self.pos = PoseStamped()    
         self.left_gripper_msg = Float64()
         self.right_gripper_msg = Float64()
+        self.joint_values = JointPosition()
+        self.joint_quantity = JointQuantity()
         
     def set_pose(self,posX,posY,posZ,oriX,oriY,oriZ,oriW):        
         self.pos.header.seq = 1
@@ -54,4 +59,19 @@ class ArmControl:
         self.grabber_left_pub.publish(self.left_gripper_msg)
         self.grabber_right_pub.publish(self.right_gripper_msg)
         
+    
+    def joint_control(self,joint1=0.0,joint2=0.0,joint3=0.0,joint4=0.0,joint5=0.0,joint6=0.0,joint7=0.0):
+        self.joint_quantity.a1 = joint1
+        self.joint_quantity.a2 = joint2
+        self.joint_quantity.a3 = joint3
+        self.joint_quantity.a4 = joint4
+        self.joint_quantity.a5 = joint5
+        self.joint_quantity.a6 = joint6
+        self.joint_quantity.a7 = joint7
+
+        self.joint_values.position = self.joint_quantity
+
+        self.joint_pub.publish(self.joint_values)
+
+        rospy.sleep(0.2)
     
